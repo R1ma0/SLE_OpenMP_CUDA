@@ -1,3 +1,4 @@
+#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
@@ -8,6 +9,7 @@ void displaySolution(double *, unsigned int);
 
 int main()
 {
+    printf("Num threads: %d\n", omp_get_thread_num());
     unsigned int N = 3; // Number of equations
 
     // Memory allocation
