@@ -1,7 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
+#include <time.h>
+#include <string.h>
 
+typedef enum
+{
+    SEC, // Seconds
+    MS,  // Milliseconds
+    MKS, // Microseconds
+} TimeFormat_t;
+
+double calcCPUTimeUsage(clock_t, clock_t, double);
+void displayExecutionTime(clock_t, clock_t, TimeFormat_t);
 void useGaussMethod(double **, double *, double *, unsigned int);
 void displayMatrix(double **, double *, unsigned int);
 void displaySolution(double *, unsigned int);
@@ -41,10 +52,17 @@ int main()
     printf("Source matrix:\n");
     displayMatrix(A, Y, N);
 
+    clock_t execBegin = clock();
     useGaussMethod(A, Y, X, N);
+    clock_t execEnd = clock();
 
     printf("Solution:\n");
     displaySolution(X, N);
+
+    // Execution time
+
+    TimeFormat_t format = MKS;
+    displayExecutionTime(execBegin, execEnd, format);
 
     // Freeing memory
 
@@ -171,4 +189,37 @@ void displaySolution(double *X, unsigned int N)
     {
         printf("X%d = %f\n", i + 1, X[i]);
     }
+}
+
+double calcCPUTimeUsage(clock_t begin, clock_t end, double divider)
+{
+    return ((double)(end - begin)) / (CLOCKS_PER_SEC / divider);
+}
+
+void displayExecutionTime(clock_t begin, clock_t end, TimeFormat_t format)
+{
+    double divider;
+    char title[4];
+
+    switch (format)
+    {
+        case SEC:
+            divider = 1.0;
+            strcpy(title, "sec");
+            break;
+        case MS:
+            divider = 1000.0;
+            strcpy(title, "ms");
+            break;
+        case MKS:
+            divider = 1000000.0;
+            strcpy(title, "mks");
+            break;
+        defaule:
+            divider = 1.0;
+            strcpy(title, "sec");
+    }
+
+    double time = calcCPUTimeUsage(begin, end, divider);
+    printf("Execution time: %f %s\n", time, title);
 }
