@@ -20,6 +20,15 @@ void displaySolution(double *, unsigned int);
 
 int main()
 {
+    // OpenMP
+
+    int maxThreads = omp_get_max_threads();
+    printf("Max threads = %d\n", maxThreads);
+
+    printf("================================================\n");
+    
+    // End OpenMP
+
     unsigned int N = 3; // Number of equations
 
     // Memory allocation
@@ -50,17 +59,19 @@ int main()
 
     // Calculate and display
 
-    printf("Source matrix:\n");
+    printf("# Source matrix:\n");
     displayMatrix(A, Y, N);
 
     clock_t execBegin = clock();
     useGaussMethod(A, Y, X, N);
     clock_t execEnd = clock();
 
-    printf("Solution:\n");
+    printf("# Solution:\n");
     displaySolution(X, N);
 
     // Execution time
+   
+    printf("================================================\n");
 
     TimeFormat_t format = MKS;
     displayExecutionTime(execBegin, execEnd, format);
@@ -142,7 +153,9 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
                 continue;
             }
 
-            for (unsigned int j = k; j < N; j++)
+            unsigned int j;
+
+            for (j = k; j < N; j++)
             {
                 A[i][j] = A[i][j] - A[k][j];
             }
@@ -155,11 +168,13 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 
     // Reverse substitution
 
+    int i;
+
     for (int t = N - 1; t >= 0; t--)
     {
         X[t] = Y[t];
-        
-        for (int i = 0; i < t; i++)
+#pragma omp parallel for private(i)
+        for (i = 0; i < t; i++)
         {
             Y[i] -= A[i][t] * X[t];
         }
