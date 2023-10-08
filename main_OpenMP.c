@@ -142,6 +142,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
     
         unsigned int i;
 
+#pragma omp parallel for schedule(dynamic, 32) private(i)
         for (i = k + 1; i < N; i++)
         {
             if (abs(A[i][k]) > max)
@@ -156,7 +157,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
         unsigned int j;
         double tmp;
 
-#pragma omp parallel for schedule(dynamic, 16) private(j, tmp)
+#pragma omp parallel for schedule(dynamic, 32) private(j, tmp)
         for (j = 0; j < N; j++)
         {
             tmp = A[k][j];
@@ -170,7 +171,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 
         // Normalization
 
-#pragma omp parallel for schedule(dynamic, 16) private(i, j, tmp)
+#pragma omp parallel for schedule(dynamic, 32) private(i, j, tmp)
         for (i = k; i < N; i++)
         {
             tmp = A[i][k];
@@ -212,6 +213,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
     {
         X[t] = Y[t];
 
+#pragma omp parallel for schedule(dynamic, 32) private(i)
         for (i = 0; i < t; i++)
         {
             Y[i] -= A[i][t] * X[t];
