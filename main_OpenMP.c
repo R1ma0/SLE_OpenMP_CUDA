@@ -1,4 +1,3 @@
-#include <omp.h>
 #include "utils.h"
 
 void useGaussMethod(double **, double *, double *, unsigned int);
@@ -36,27 +35,29 @@ int main(int argc, char *argv[])
     double *X = (double *)malloc(N * sizeof(double));
 
     // Filling arrays
-    
+
+    unsigned int j;
+
+#pragma omp parallel for schedule(dynamic, 32) private(j)
     for (i = 0; i < N; i++)
     {
-        for (unsigned int j = 0; j < N; j++)
+        for (j = 0; j < N; j++)
         {
-            A[i][j] = drand(0.0, 10.0);
+            A[i][j] = j;
         }
 
-        Y[i] = drand(25.0, 56.0);
+        Y[i] = i;
     }
 
     // Calculate 
 
-    clock_t execBegin = clock();
+    double execBegin = omp_get_wtime();
     useGaussMethod(A, Y, X, N);
-    clock_t execEnd = clock();
+    double execEnd = omp_get_wtime();
 
     // Execution time
    
-    TimeFormat_t format = SEC;
-    displayExecutionTime(execBegin, execEnd, format);
+    printf("Execution time: %f sec\n", execEnd - execBegin);
 
     // Checking the correctness of the solution
     
@@ -105,21 +106,22 @@ int main(int argc, char *argv[])
 
     // Freeing memory
 
-    for (i = 0; i < N; i++)
-    {
-        free(A[i]);
-    }
     for (k = 0; k < M; k++)
     {
         free(a[k]);
     }
-    free(A);
     free(a);
-    free(Y);
     free(y);
-    free(X);
     free(x);
     free(correctSolution);
+
+    for (i = 0; i < N; i++)
+    {
+        free(A[i]);
+    }
+    free(A);
+    free(Y);
+    free(X);
 
     return 0;
 }
@@ -140,7 +142,6 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
     
         unsigned int i;
 
-#pragma omp parallel for schedule(static) private(i)
         for (i = k + 1; i < N; i++)
         {
             if (abs(A[i][k]) > max)
@@ -155,7 +156,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
         unsigned int j;
         double tmp;
 
-#pragma omp parallel for schedule(static) private(j, tmp)
+#pragma omp parallel for schedule(dynamic, 16) private(j, tmp)
         for (j = 0; j < N; j++)
         {
             tmp = A[k][j];
@@ -169,7 +170,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 
         // Normalization
 
-#pragma omp parallel for schedule(static) private(i, j)
+#pragma omp parallel for schedule(dynamic, 16) private(i, j, tmp)
         for (i = k; i < N; i++)
         {
             tmp = A[i][k];
@@ -207,7 +208,6 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
     int i,
         t;
 
-#pragma omp parallel for schedule(static) private(t)
     for (t = N - 1; t >= 0; t--)
     {
         X[t] = Y[t];

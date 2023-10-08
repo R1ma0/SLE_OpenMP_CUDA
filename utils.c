@@ -31,36 +31,3 @@ void displaySolution(double *X, unsigned int N)
         printf("X%d = %f\n", i + 1, X[i]);
     }
 }
-
-double calcCPUTimeUsage(clock_t begin, clock_t end, double divider)
-{
-    return ((double)(end - begin)) / (CLOCKS_PER_SEC / divider);
-}
-
-void displayExecutionTime(clock_t begin, clock_t end, TimeFormat_t format)
-{
-    double divider;
-    char title[4];
-
-    switch (format)
-    {
-        case SEC:
-            divider = 1.0;
-            strcpy(title, "sec");
-            break;
-        case MS:
-            divider = 1000.0;
-            strcpy(title, "ms");
-            break;
-        case MKS:
-            divider = 1000000.0;
-            strcpy(title, "mks");
-            break;
-        default:
-            divider = 1.0;
-            strcpy(title, "sec");
-    }
-
-    double time = calcCPUTimeUsage(begin, end, divider);
-    printf("Execution time: %f %s\n", time, title);
-}

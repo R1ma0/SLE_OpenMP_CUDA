@@ -1,6 +1,7 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
@@ -14,9 +15,7 @@ typedef enum
     MKS, // Microseconds
 } TimeFormat_t;
 
-double calcCPUTimeUsage(clock_t, clock_t, double);
 double drand(double, double);
-void displayExecutionTime(clock_t, clock_t, TimeFormat_t);
 void displayMatrix(double **, double *, unsigned int);
 void displaySolution(double *, unsigned int);
 

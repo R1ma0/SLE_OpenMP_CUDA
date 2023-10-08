@@ -30,39 +30,29 @@ int main(int argc, char *argv[])
     double *X = (double *)malloc(N * sizeof(double));
 
     // Filling arrays
-    
+
+    unsigned int j;
+
+#pragma omp parallel for schedule(dynamic, 32) private(j)
     for (i = 0; i < N; i++)
     {
-        for (unsigned int j = 0; j < N; j++)
+        for (j = 0; j < N; j++)
         {
-            A[i][j] = drand(0.0, 10.0);
+            A[i][j] = j;
         }
 
-        Y[i] = drand(25.0, 56.0);
+        Y[i] = i;
     }
 
     // Calculate and display
 
-    if (argc == 3 && atoi(argv[2])== 1)
-    {
-        printf("Source matrix:\n");
-        displayMatrix(A, Y, N);
-    }
-
-    clock_t execBegin = clock();
+    double execBegin = omp_get_wtime();
     useGaussMethod(A, Y, X, N);
-    clock_t execEnd = clock();
-
-    if (argc == 3 && atoi(argv[2])== 1)
-    {
-        printf("Solution:\n");
-        displaySolution(X, N);
-    }
+    double execEnd = omp_get_wtime();
 
     // Execution time
 
-    TimeFormat_t format = SEC;
-    displayExecutionTime(execBegin, execEnd, format);
+    printf("Execution time: %f sec\n", execEnd - execBegin);
 
     // Freeing memory
 
