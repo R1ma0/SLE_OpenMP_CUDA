@@ -2,18 +2,27 @@
 
 void useGaussMethod(double **, double *, double *, unsigned int);
 
-int main()
+int main(int argc, char *argv[])
 {
-    unsigned int N = 1000; // Number of equations
+    unsigned int N; // Number of equations
 
-    printf("Number of equations = %d\n", N);
+    if (argc <= 1)
+    {
+        printf("Enter size of the matrix.\n");
+        return 0;
+    }
+    else
+    {
+        N = atoi(argv[1]); 
+        printf("Number of equations = %d\n", N);
+    }
 
     // Memory allocation
 
     unsigned int i;
     
     double **A = (double **)malloc(N * sizeof(double *));
-    for (unsigned int i = 0; i < N; i++)
+    for (i = 0; i < N; i++)
     {
         A[i] = (double *)malloc(N * sizeof(double));
     }
@@ -34,19 +43,25 @@ int main()
 
     // Calculate and display
 
-    //printf("Source matrix:\n");
-    //displayMatrix(A, Y, N);
+    if (argc == 3 && atoi(argv[2])== 1)
+    {
+        printf("Source matrix:\n");
+        displayMatrix(A, Y, N);
+    }
 
     clock_t execBegin = clock();
     useGaussMethod(A, Y, X, N);
     clock_t execEnd = clock();
 
-    //printf("Solution:\n");
-    //displaySolution(X, N);
+    if (argc == 3 && atoi(argv[2])== 1)
+    {
+        printf("Solution:\n");
+        displaySolution(X, N);
+    }
 
     // Execution time
 
-    TimeFormat_t format = MS;
+    TimeFormat_t format = SEC;
     displayExecutionTime(execBegin, execEnd, format);
 
     // Freeing memory

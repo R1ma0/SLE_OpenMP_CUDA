@@ -2,6 +2,7 @@
 
 double drand(double min, double max)
 {
+    srand(15);
     return ((double)rand() * (max - min)) / (double)RAND_MAX + min;
 }
 
