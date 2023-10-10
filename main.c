@@ -53,10 +53,64 @@ int main(int argc, char *argv[])
     // Execution time
 
     printf("Execution time: %f sec\n", execEnd - execBegin);
+    
+    // Checking the correctness of the solution
+    
+    unsigned int M = 3;
+    unsigned int k;
+    
+    double *correctSolution = (double *)malloc(M * sizeof(double));
+    correctSolution[0] = 7.0;
+    correctSolution[1] = 5.0;
+    correctSolution[2] = 2.0;
+
+    double **a = (double **)malloc(M * sizeof(double *));
+    for (k = 0; k < M; k++)
+    {
+        a[k] = (double *)malloc(M * sizeof(double));
+    }
+    double *y = (double *)malloc(M * sizeof(double));
+    double *x = (double *)malloc(M * sizeof(double));
+
+    a[0][0] = 2.0;
+    a[0][1] = 4.0;
+    a[0][2] = 1.0;
+    a[1][0] = 5.0;
+    a[1][1] = 2.0;
+    a[1][2] = 1.0;
+    a[2][0] = 2.0;
+    a[2][1] = 3.0;
+    a[2][2] = 4.0;
+
+    y[0] = 36.0;
+    y[1] = 47.0;
+    y[2] = 37.0;
+
+    printf("\n=== Checking the correctness of the algorithm  ===\n");
+
+    printf("Test matrix:\n");
+    displayMatrix(a, y, M);
+
+    useGaussMethod(a, y, x, M);
+
+    printf("Resultion solution:\n");
+    displaySolution(x, M);
+
+    printf("Correct solution\n");
+    displaySolution(correctSolution, M);
 
     // Freeing memory
 
-    for (unsigned int i = 0; i < N; i++)
+    for (k = 0; k < M; k++)
+    {
+        free(a[k]);
+    }
+    free(a);
+    free(y);
+    free(x);
+    free(correctSolution);
+
+    for (i = 0; i < N; i++)
     {
         free(A[i]);
     }
