@@ -18,5 +18,6 @@ typedef enum
 double drand(double, double);
 void displayMatrix(double **, double *, unsigned int);
 void displaySolution(double *, unsigned int);
+void swap(double *, double *);
 
 #endif

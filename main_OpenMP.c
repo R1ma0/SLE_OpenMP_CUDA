@@ -128,10 +128,14 @@ int main(int argc, char *argv[])
 
 void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 {
-    const double eps = DBL_EPSILON;
-    double max;
-    unsigned int k = 0;
-    unsigned int index;
+    double max,
+           tmp;
+    int g,
+        t;
+    unsigned int k = 0,
+                 i,
+                 j,
+                 index;
 
     while (k < N)
     {
@@ -139,8 +143,6 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 
         max = abs(A[k][k]);
         index = k;
-    
-        unsigned int i;
 
 #pragma omp parallel for schedule(dynamic, 32) private(i)
         for (i = k + 1; i < N; i++)
@@ -153,9 +155,6 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
         }
 
         // Rearranging strings
-
-        unsigned int j;
-        double tmp;
 
 #pragma omp parallel for schedule(dynamic, 32) private(j, tmp)
         for (j = 0; j < N; j++)
@@ -176,7 +175,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
         {
             tmp = A[i][k];
             
-            if (abs(tmp) < eps)
+            if (abs(tmp) < DBL_EPSILON)
             {
                 continue;
             }
@@ -206,17 +205,14 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 
     // Reverse substitution
 
-    int i,
-        t;
-
     for (t = N - 1; t >= 0; t--)
     {
         X[t] = Y[t];
 
-#pragma omp parallel for schedule(dynamic, 32) private(i)
-        for (i = 0; i < t; i++)
+#pragma omp parallel for schedule(dynamic, 32) private(g)
+        for (g = 0; g < t; g++)
         {
-            Y[i] -= A[i][t] * X[t];
+            Y[g] -= A[g][t] * X[t];
         }
     }
 }

@@ -98,6 +98,9 @@ int main(int argc, char *argv[])
 
     printf("Correct solution\n");
     displaySolution(correctSolution, M);
+    
+    printf("Test matrix final:\n");
+    displayMatrix(a, y, M);
 
     // Freeing memory
 
@@ -123,10 +126,14 @@ int main(int argc, char *argv[])
 
 void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 {
-    const double eps = DBL_EPSILON;
-    double max;
-    unsigned int k = 0;
-    unsigned int index;
+    double max,
+           tmp;
+    int g,
+        t;
+    unsigned int k = 0,
+                 i,
+                 j,
+                 index;
 
     while (k < N)
     {
@@ -135,7 +142,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
         max = abs(A[k][k]);
         index = k;
 
-        for (unsigned int i = k + 1; i < N; i++)
+        for (i = k + 1; i < N; i++)
         {
             if (abs(A[i][k]) > max)
             {
@@ -146,29 +153,29 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 
         // Rearranging strings
 
-        for (unsigned int j = 0; j < N; j++)
+        for (j = 0; j < N; j++)
         {
-            double tmp = A[k][j];
+            tmp = A[k][j];
             A[k][j] = A[index][j];
             A[index][j] = tmp;
         }
 
-        double tmp = Y[k];
+        tmp = Y[k];
         Y[k] = Y[index];
         Y[index] = tmp;
 
         // Normalization
 
-        for (unsigned int i = k; i < N; i++)
+        for (i = k; i < N; i++)
         {
-            double tmp = A[i][k];
+            tmp = A[i][k];
             
-            if (abs(tmp) < eps)
+            if (abs(tmp) < DBL_EPSILON)
             {
                 continue;
             }
 
-            for (unsigned int j = k; j < N; j++)
+            for (j = k; j < N; j++)
             {
                 A[i][j] = A[i][j] / tmp;
             }
@@ -180,7 +187,7 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
                 continue;
             }
 
-            for (unsigned int j = k; j < N; j++)
+            for (j = k; j < N; j++)
             {
                 A[i][j] = A[i][j] - A[k][j];
             }
@@ -193,13 +200,13 @@ void useGaussMethod(double **A, double *Y, double *X, unsigned int N)
 
     // Reverse substitution
 
-    for (int t = N - 1; t >= 0; t--)
+    for (t = N - 1; t >= 0; t--)
     {
         X[t] = Y[t];
         
-        for (int i = 0; i < t; i++)
+        for (g = 0; g < t; g++)
         {
-            Y[i] -= A[i][t] * X[t];
+            Y[g] -= A[g][t] * X[t];
         }
     }
 }
